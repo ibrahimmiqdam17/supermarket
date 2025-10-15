@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>MiShop - Belanja Online Terpercaya</title>
+
+    <!-- Tailwind (CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Custom -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="bg-gray-50 text-slate-800 antialiased">
+    <!-- Header -->
+    <header class="bg-white/95 backdrop-blur shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4">
+            <!-- Top Header -->
+            <div class="flex items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <a href="index.html"
+                        class="text-2xl font-extrabold text-rose-700 hover:text-rose-800 transition duration-200">
+                        <i class="fas fa-store mr-2"></i>MiShop
+                    </a>
+                </div>
+
+                <!-- Search & Actions -->
+                <div class="flex-1 max-w-2xl mx-4 hidden sm:block">
+                    <div class="relative">
+                        <input id="search-input" type="search" placeholder="Cari produk, kategori, merek..."
+                            class="w-full border rounded-lg px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-rose-200" />
+                        <i class="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <button id="show-favorites"
+                        class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-rose-50 text-sm">
+                        <i class="fa fa-heart text-rose-600"></i>
+                        <span>Favorit Saya</span>
+                    </button>
+
+                    <button id="cart-btn" class="relative p-2 rounded-lg hover:bg-rose-50" aria-label="Buka keranjang">
+                        <i class="fas fa-shopping-cart text-xl text-slate-700"></i>
+                        <span id="cart-count"
+                            class="absolute -top-1 -right-1 bg-rose-600 text-white text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center">0</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Navigation Bar -->
+            <nav class="mt-4 border-t pt-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-6">
+                        <a href="#beranda"
+                            class="text-rose-600 font-medium transition duration-200 border-b-2 border-rose-600">
+                            <i class="fas fa-home mr-2"></i>Beranda
+                        </a>
+                        <a href="#promo" class="text-slate-700 hover:text-rose-600 font-medium transition duration-200">
+                            <i class="fas fa-tag mr-2"></i>Promo
+                        </a>
+                        <a href="#new-arrival"
+                            class="text-slate-700 hover:text-rose-600 font-medium transition duration-200">
+                            <i class="fas fa-star mr-2"></i>New Arrival
+                        </a>
+                    </div>
+
+                    <div class="flex items-center gap-6">
+                        <a href="tentang_kami.html"
+                            class="text-slate-700 hover:text-rose-600 font-medium transition duration-200">
+                            <i class="fas fa-info-circle mr-2"></i>Tentang Kami
+                        </a>
+                        <a href="#contact"
+                            class="text-slate-700 hover:text-rose-600 font-medium transition duration-200">
+                            <i class="fas fa-phone mr-2"></i>Kontak
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <!-- Mobile search (below header) -->
+        <div class="sm:hidden px-4 pb-3">
+            <input id="search-input-mobile" type="search" placeholder="Cari produk..."
+                class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-rose-200" />
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Beranda Section -->
+        <section id="beranda">
+            <!-- Controls: Category tags + sort -->
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                <div id="category-bar" class="flex gap-2 flex-wrap"></div>
+                <div class="flex items-center gap-3">
+                    <label class="text-sm text-slate-500 hidden md:block">Tampilkan:</label>
+                    <select id="view-select" class="border rounded px-3 py-2">
+                        <option value="all">Semua Produk</option>
+                        <option value="favorites">Favorit Saya</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Loader -->
+            <div id="loader" class="text-center py-8">
+                <i class="fas fa-spinner fa-spin text-4xl text-rose-600"></i>
+                <p class="mt-2 text-slate-500">Memuat produk...</p>
+            </div>
+
+            <!-- Grid & Favorites area -->
+            <section id="catalog" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></section>
+
+            <!-- Empty state -->
+            <div id="empty-state" class="hidden text-center text-slate-500 mt-12">
+                Tidak ada produk yang sesuai.
+            </div>
+        </section>
+
+        <!-- Promo Section -->
+        <section id="promo" class="mt-16">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-slate-800">Promo Spesial</h2>
+                <a href="#promo" class="text-rose-600 hover:text-rose-700 font-medium">Lihat Semua</a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-gradient-to-r from-rose-500 to-pink-500 rounded-xl p-6 text-white">
+                    <h3 class="text-xl font-bold mb-2">Diskon 50%</h3>
+                    <p class="text-rose-100 mb-4">Untuk semua produk elektronik dengan pembelian minimal Rp 500.000</p>
+                    <button onclick="showPromoToast('Diskon 50%')"
+                        class="bg-white text-rose-600 px-4 py-2 rounded-lg font-semibold hover:bg-rose-50 transition">Klaim
+                        Sekarang</button>
+                </div>
+                <div class="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl p-6 text-white">
+                    <h3 class="text-xl font-bold mb-2">Gratis Ongkir</h3>
+                    <p class="text-blue-100 mb-4">Gratis pengiriman ke seluruh Indonesia tanpa minimum pembelian</p>
+                    <button onclick="showPromoToast('Gratis Ongkir')"
+                        class="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold hover:bg-blue-50 transition">Selengkapnya</button>
+                </div>
+                <div class="bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl p-6 text-white">
+                    <h3 class="text-xl font-bold mb-2">Cashback 20%</h3>
+                    <p class="text-green-100 mb-4">Dapatkan cashback untuk pembelian pertama di MiShop</p>
+                    <button onclick="showPromoToast('Cashback 20%')"
+                        class="bg-white text-green-600 px-4 py-2 rounded-lg font-semibold hover:bg-green-50 transition">Dapatkan</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- New Arrival Section -->
+        <section id="new-arrival" class="mt-16">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-slate-800">New Arrival</h2>
+                <a href="#new-arrival" class="text-rose-600 hover:text-rose-700 font-medium">Lihat Semua</a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 product-card">
+                    <div class="h-40 bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
+                        <i class="fas fa-tshirt text-4xl text-rose-400"></i>
+                    </div>
+                    <h3 class="font-semibold text-slate-800">Kaos Premium Cotton</h3>
+                    <p class="text-rose-600 font-bold mt-2">Rp 299.000</p>
+                    <button
+                        onclick="addNewArrivalToCart('kaos-premium', 'Kaos Premium Cotton', 299000, 'fas fa-tshirt')"
+                        class="w-full mt-3 bg-rose-600 text-white py-2 rounded-lg hover:bg-rose-700 transition">
+                        <i class="fas fa-cart-plus mr-2"></i>Tambah ke Keranjang
+                    </button>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 product-card">
+                    <div class="h-40 bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
+                        <i class="fas fa-laptop text-4xl text-blue-400"></i>
+                    </div>
+                    <h3 class="font-semibold text-slate-800">Laptop Ultra Slim</h3>
+                    <p class="text-rose-600 font-bold mt-2">Rp 8.999.000</p>
+                    <button onclick="addNewArrivalToCart('laptop-ultra', 'Laptop Ultra Slim', 8999000, 'fas fa-laptop')"
+                        class="w-full mt-3 bg-rose-600 text-white py-2 rounded-lg hover:bg-rose-700 transition">
+                        <i class="fas fa-cart-plus mr-2"></i>Tambah ke Keranjang
+                    </button>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 product-card">
+                    <div class="h-40 bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
+                        <i class="fas fa-mobile-alt text-4xl text-green-400"></i>
+                    </div>
+                    <h3 class="font-semibold text-slate-800">Smartphone Flagship</h3>
+                    <p class="text-rose-600 font-bold mt-2">Rp 6.499.000</p>
+                    <button
+                        onclick="addNewArrivalToCart('smartphone-flagship', 'Smartphone Flagship', 6499000, 'fas fa-mobile-alt')"
+                        class="w-full mt-3 bg-rose-600 text-white py-2 rounded-lg hover:bg-rose-700 transition">
+                        <i class="fas fa-cart-plus mr-2"></i>Tambah ke Keranjang
+                    </button>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 product-card">
+                    <div class="h-40 bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
+                        <i class="fas fa-headphones text-4xl text-purple-400"></i>
+                    </div>
+                    <h3 class="font-semibold text-slate-800">Wireless Headphone</h3>
+                    <p class="text-rose-600 font-bold mt-2">Rp 1.299.000</p>
+                    <button
+                        onclick="addNewArrivalToCart('headphone-wireless', 'Wireless Headphone', 1299000, 'fas fa-headphones')"
+                        class="w-full mt-3 bg-rose-600 text-white py-2 rounded-lg hover:bg-rose-700 transition">
+                        <i class="fas fa-cart-plus mr-2"></i>Tambah ke Keranjang
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Product Detail Modal -->
+    <div id="productModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-white w-full max-w-3xl rounded-xl shadow-xl overflow-hidden">
+            <div class="p-6 md:flex gap-6">
+                <div class="md:w-1/2 flex items-center justify-center bg-gray-50 rounded-lg p-4">
+                    <img id="modal-image" src="https://placehold.co/400x400" alt="product"
+                        class="max-h-64 object-contain" />
+                </div>
+                <div class="md:w-1/2">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h3 id="modal-product-name" class="text-2xl font-semibold"></h3>
+                            <div id="modal-category" class="text-sm text-slate-500 mt-1"></div>
+                        </div>
+                        <button id="closeModalBtn" class="text-slate-400 hover:text-slate-600"><i
+                                class="fas fa-times"></i></button>
+                    </div>
+
+                    <p id="modal-price" class="text-2xl text-rose-600 font-extrabold mt-4"></p>
+                    <p id="modal-description" class="mt-3 text-slate-600 leading-relaxed"></p>
+
+                    <div class="mt-6 flex items-center gap-3">
+                        <label class="text-sm">Jumlah</label>
+                        <input id="modal-qty" type="number" min="1" value="1" class="w-20 px-3 py-2 border rounded" />
+                        <button id="modal-add-to-cart"
+                            class="ml-auto bg-rose-600 text-white px-4 py-2 rounded-lg hover:bg-rose-700"><i
+                                class="fas fa-cart-plus mr-2"></i> Tambah</button>
+                        <button id="modal-fav" class="ml-2 text-rose-600 border rounded px-3 py-2 hover:bg-rose-50"
+                            title="Tambahkan ke favorit"><i class="fa fa-heart"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Modal (center popup) -->
+    <div id="cartModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-60 hidden">
+        <div class="bg-white w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden">
+            <div class="p-6">
+                <div class="flex items-start justify-between">
+                    <h3 class="text-xl font-semibold">Keranjang Belanja</h3>
+                    <button id="close-cart" class="text-slate-400 hover:text-slate-600"><i
+                            class="fas fa-times"></i></button>
+                </div>
+
+                <div id="cart-list" class="mt-4 space-y-4 max-h-64 overflow-y-auto p-1">
+                    <!-- cart items -->
+                </div>
+
+                <div class="mt-4 border-t pt-4 flex items-center justify-between">
+                    <div>
+                        <div class="text-sm text-slate-500">Subtotal</div>
+                        <div id="cart-subtotal" class="text-2xl text-rose-600 font-extrabold">Rp 0</div>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button id="clear-cart" class="px-4 py-2 rounded-lg border text-sm">Kosongkan</button>
+                        <button id="checkout-btn"
+                            class="px-4 py-2 rounded-lg bg-rose-600 text-white hover:bg-rose-700">Checkout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Summary Modal (confirm before WA) -->
+    <div id="summaryModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-70 hidden">
+        <div class="bg-white w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden">
+            <div class="p-6">
+                <div class="flex items-start justify-between">
+                    <h3 class="text-xl font-semibold">Ringkasan Pesanan</h3>
+                    <button id="close-summary" class="text-slate-400 hover:text-slate-600"><i
+                            class="fas fa-times"></i></button>
+                </div>
+
+                <div id="summary-content" class="mt-4 space-y-2 max-h-56 overflow-y-auto"></div>
+
+                <div class="mt-4 grid grid-cols-1 gap-3">
+                    <input id="buyer-name" type="text" placeholder="Nama lengkap"
+                        class="w-full px-3 py-2 border rounded" />
+                    <input id="buyer-phone" type="text" placeholder="Nomor HP"
+                        class="w-full px-3 py-2 border rounded" />
+                    <textarea id="buyer-note" rows="3" placeholder="Alamat dan catatan tambahan"
+                        class="w-full px-3 py-2 border rounded"></textarea>
+                </div>
+
+                <div class="mt-4 flex items-center justify-between">
+                    <div class="text-lg font-semibold">Total</div>
+                    <div id="summary-total" class="text-2xl text-rose-600 font-extrabold">Rp 0</div>
+                </div>
+
+                <div class="mt-4 flex gap-3">
+                    <button id="edit-cart" class="flex-1 border rounded px-4 py-2">Kembali</button>
+                    <button id="send-wa" class="flex-1 bg-green-600 text-white rounded px-4 py-2 hover:bg-green-700"><i
+                            class="fab fa-whatsapp mr-2"></i> Kirim ke WhatsApp</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-red-600 text-white mt-12">
+        <div class="container mx-auto px-6 py-10 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+                <h3 class="text-lg font-semibold mb-3">Tentang MiShop</h3>
+                <p class="text-sm text-red-100 leading-relaxed">
+                    MiShop adalah platform belanja online modern yang menyediakan produk terbaik
+                    dengan harga bersahabat. Kami berkomitmen menghadirkan pengalaman belanja yang cepat, aman, dan
+                    menyenangkan.
+                </p>
+            </div>
+
+            <div>
+                <h3 class="text-lg font-semibold mb-3">Navigasi Cepat</h3>
+                <ul class="space-y-2 text-sm text-red-100">
+                    <li><a href="#beranda" class="hover:text-white transition">Beranda</a></li>
+                    <li><a href="#promo" class="hover:text-white transition">Promo</a></li>
+                    <li><a href="#new-arrival" class="hover:text-white transition">New Arrival</a></li>
+                    <li><a href="tentang_kami.html" class="hover:text-white transition">Tentang Kami</a></li>
+                    <li><a href="#contact" class="hover:text-white transition">Kontak</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h3 class="text-lg font-semibold mb-3">Hubungi Kami</h3>
+                <ul class="space-y-2 text-sm text-red-100">
+                    <li><i class="fas fa-map-marker-alt mr-2"></i> Jl. Pahlawan No. 123, Malang</li>
+                    <li><i class="fas fa-phone mr-2"></i> +62 812-3456-7890</li>
+                    <li><i class="fas fa-envelope mr-2"></i> support@MiShop.id</li>
+                </ul>
+                <div class="flex space-x-4 mt-4">
+                    <a href="#" class="hover:text-white transition"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="hover:text-white transition"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="hover:text-white transition"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" class="hover:text-white transition"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-lg font-semibold mb-3">Lokasi Kami</h3>
+                <div class="bg-red-500 rounded-lg overflow-hidden h-48">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3951.3141822078867!2d112.63027617464893!3d-7.966446479388325!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dd62822063dc2fb%3A0x78879446481a4da2!2sMalang%2C%20Kota%20Malang%2C%20Jawa%20Timur!5e0!3m2!1sid!2sid!4v1710000000000!5m2!1sid!2sid"
+                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Section -->
+        <div id="contact" class="bg-red-800 py-10">
+            <div class="container mx-auto px-6">
+                <h3 class="text-xl font-semibold mb-6 text-center">Kontak Kami</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="text-center">
+                        <i class="fas fa-phone text-2xl mb-3"></i>
+                        <h4 class="font-semibold mb-2">Telepon</h4>
+                        <p class="text-sm text-red-100">+62 812-3456-7890</p>
+                        <p class="text-sm text-red-100">+62 813-4567-8901</p>
+                    </div>
+                    <div class="text-center">
+                        <i class="fas fa-envelope text-2xl mb-3"></i>
+                        <h4 class="font-semibold mb-2">Email</h4>
+                        <p class="text-sm text-red-100">support@MiShop.id</p>
+                        <p class="text-sm text-red-100">sales@MiShop.id</p>
+                    </div>
+                    <div class="text-center">
+                        <i class="fas fa-clock text-2xl mb-3"></i>
+                        <h4 class="font-semibold mb-2">Jam Operasional</h4>
+                        <p class="text-sm text-red-100">Senin - Minggu: 08.00 - 22.00 WIB</p>
+                        <p class="text-sm text-red-100">Hari Libur: Tetap Buka</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-red-900 text-center text-sm py-4 border-t border-red-700">
+            © 2025 <span class="font-semibold">MiShop</span>. All rights reserved.
+        </div>
+    </footer>
+
+    <!-- Toast -->
+    <div id="toast-container" class="fixed bottom-6 right-6 z-80"></div>
+
+    <!-- Script -->
+    <script src="script.js"></script>
+    <script>
+        // Data produk new arrival
+        const newArrivalProducts = {
+            'kaos-premium': {
+                id: 'kaos-premium',
+                title: 'Kaos Premium Cotton',
+                price: 299000,
+                category: 'fashion',
+                image: 'fas fa-tshirt',
+                description: 'Kaos premium dengan bahan cotton combed 30s yang nyaman dipakai sehari-hari.'
+            },
+            'laptop-ultra': {
+                id: 'laptop-ultra',
+                title: 'Laptop Ultra Slim',
+                price: 8999000,
+                category: 'electronics',
+                image: 'fas fa-laptop',
+                description: 'Laptop ultra slim dengan prosesor terbaru dan baterai tahan lama.'
+            },
+            'smartphone-flagship': {
+                id: 'smartphone-flagship',
+                title: 'Smartphone Flagship',
+                price: 6499000,
+                category: 'electronics',
+                image: 'fas fa-mobile-alt',
+                description: 'Smartphone flagship dengan kamera profesional dan performa maksimal.'
+            },
+            'headphone-wireless': {
+                id: 'headphone-wireless',
+                title: 'Wireless Headphone',
+                price: 1299000,
+                category: 'electronics',
+                image: 'fas fa-headphones',
+                description: 'Headphone wireless dengan noise cancellation dan kualitas suara premium.'
+            }
+        };
+
+        // Fungsi untuk promo toast
+        function showPromoToast(promoName) {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast bg-gray-800 text-white px-4 py-2 rounded-lg shadow-md mb-2';
+            toast.textContent = `Promo ${promoName} berhasil diklaim!`;
+            toastContainer.appendChild(toast);
+            setTimeout(() => toast.remove(), 3200);
+        }
+
+        // Fungsi untuk menambah produk new arrival ke cart
+        function addNewArrivalToCart(productId, productName, price, icon) {
+            // Dapatkan cart dari localStorage
+            let cart = JSON.parse(localStorage.getItem('tk_cart_v1')) || [];
+
+            // Cek apakah produk sudah ada di cart
+            const existingItem = cart.find(item => item.id === productId);
+
+            if (existingItem) {
+                // Jika sudah ada, tambah quantity
+                existingItem.qty += 1;
+            } else {
+                // Jika belum ada, tambah item baru
+                cart.push({
+                    id: productId,
+                    qty: 1,
+                    title: productName,
+                    price: price,
+                    category: 'new-arrival',
+                    image: icon,
+                    isNewArrival: true
+                });
+            }
+
+            // Simpan ke localStorage
+            localStorage.setItem('tk_cart_v1', JSON.stringify(cart));
+
+            // Update cart counter
+            updateCartCounter();
+
+            // Show toast
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast bg-gray-800 text-white px-4 py-2 rounded-lg shadow-md mb-2';
+            toast.textContent = `${productName} ditambahkan ke keranjang!`;
+            toastContainer.appendChild(toast);
+            setTimeout(() => toast.remove(), 3200);
+        }
+
+        // Fungsi untuk update cart counter
+        function updateCartCounter() {
+            const cart = JSON.parse(localStorage.getItem('tk_cart_v1')) || [];
+            const totalItems = cart.reduce((total, item) => total + item.qty, 0);
+            const cartCount = document.getElementById('cart-count');
+            cartCount.textContent = totalItems;
+        }
+
+        // Update cart counter saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', function () {
+            updateCartCounter();
+        });
+
+        // Smooth scrolling untuk anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
